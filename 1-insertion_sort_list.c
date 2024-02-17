@@ -5,62 +5,35 @@
  *                       order using Insertion sort.
  * @list: Double pointer to the head of the doubly linked list.
  */
-
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *current = *list;
-	listint_t *next;
+	listint_t *current;
 
-	if (!current || !current->next)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 		return;
-	while (current->next)
-	{
-		next = current->next;
-		if (current->value > next->value)
-		{
-			listint_t *prev = current->prev;
 
-			current->prev = next;
-			next->prev = prev;
-			current->next = next->next;
-			next->next = current;
-			if (prev)
-				prev->next = next;
+	current = (*list)->next;
+
+	while (current != NULL)
+	{
+		listint_t *insertion_point = current->prev;
+
+		while (insertion_point != NULL && insertion_point->value > current->value)
+		{
+			if (insertion_point->prev != NULL)
+				insertion_point->prev->next = current;
 			else
-				*list = next;
+				*list = current;
+			current->prev = insertion_point->prev;
+			insertion_point->prev = current;
+			insertion_point->next = current->next;
+			if (current->next != NULL)
+				current->next->prev = insertion_point;
+			current->next = insertion_point;
 			print_list(*list);
+			insertion_point = current->prev;
 		}
-		else
-		{
-			current = current->next;
-		}
+		current = current->next;
 	}
-}
-/**
- * main - main function
- *
- * Return: return the position of the last element sorted
- */
-int main(void)
-{
-	listint_t *list = NULL;
-
-	for (int i = 10; i > 0; i--)
-	{
-		listint_t *new_node = malloc(sizeof(listint_t));
-
-		new_node->value = i;
-		new_node->prev = NULL;
-		new_node->next = list;
-		if (list)
-			list->prev = new_node;
-		list = new_node;
-	}
-	printf("Original list: ");
-	print_list(list);
-	insertion_sort_list(&list);
-	printf("Sorted list: ");
-	print_list(list);
-	return (0);
 }
 
